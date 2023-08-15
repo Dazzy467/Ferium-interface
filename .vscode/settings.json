@@ -1,0 +1,15 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "${workspaceFolder}",
+            "binaryPath": "${workspaceFolder}\\main.exe",
+            "binaryArgs": []
+        },
+        {
+            "cwd": "c:\\Users\\David Yusuf\\Documents\\Programming project\\C++\\wxWidgets\\Ferium interface\\build\\debug",
+            "binaryPath": "c:\\Users\\David Yusuf\\Documents\\Programming project\\C++\\wxWidgets\\Ferium interface\\build\\debug\\debug.exe",
+            "binaryArgs": []
+        }
+    ]
+}

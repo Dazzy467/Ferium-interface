@@ -1,0 +1,8 @@
+build/debug/wxbase32ud_gcc_custom.dll
+build/debug/wxmsw32ud_core_gcc_custom.dll
+build/release/wxbase32u_gcc_custom.dll
+build/release/wxmsw32u_core_gcc_custom.dll
+build/debug/debug.exe
+build/release/release.exe
+build/debug-static/debug.exe
+build/release-static/release.exe
