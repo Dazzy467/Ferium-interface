@@ -1,6 +1,7 @@
 DEBUG_FLAG = -fdiagnostics-color=always -g -DDEBUG
 RELEASE_FLAG = -static -s -O3 -Wl,--subsystem,windows
 DLL_PATH = C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll
+INCLUDE = "C:\Program Files (x86)\wxWidgets\include"
 
 DEBUG_INCLUDE_PATH = 	-I "include" \
 						-I "C:\Program Files (x86)\wxWidgets\include" \
@@ -94,7 +95,6 @@ release: build/release/release.exe build/debug/wxbase32u_gcc_custom.dll build/de
 debug-static: build/debug-static/debug.exe
 release-static: build/release-static/release.exe
 
-
 build/debug/wxbase32ud_gcc_custom.dll: build/debug/debug.exe
 	xcopy /D /Y "$(DLL_PATH)\wxbase32ud_gcc_custom.dll" "build\debug\"
 
@@ -107,8 +107,8 @@ build/debug/wxbase32u_gcc_custom.dll: build/release/release.exe
 build/debug/wxmsw32u_core_gcc_custom.dll: build/release/release.exe
 	xcopy /D /Y "$(DLL_PATH)\wxmsw32u_core_gcc_custom.dll" "build\release\"
 
-build/debug/debug.exe: src/main.cpp
-	g++ $(DEBUG_FLAG) $< $(DEBUG_INCLUDE_PATH) $(LINKING_DEBUG) -o $@
+build/debug/debug.exe: src/main.cpp res/resource_compiled.res include/*.h
+	g++ $(DEBUG_FLAG) src/main.cpp res/resource_compiled.res $(DEBUG_INCLUDE_PATH) $(LINKING_DEBUG) -o $@
 	
 build/release/release.exe: src/main.cpp
 	g++ $(RELEASE_FLAG) $< $(RELEASE_INCLUDE_PATH) $(LINKING_RELEASE) -o $@
@@ -116,5 +116,8 @@ build/release/release.exe: src/main.cpp
 build/debug-static/debug.exe: src/main.cpp
 	g++ $(DEBUG_FLAG) $< $(DEBUG_INCLUDE_PATH_STATIC) $(LINKING_DEBUG_STATIC) -o $@
 
-build/release-static/release.exe: src/main.cpp
+build/release-static/release.exe: src/main.cpp 
 	g++ $(RELEASE_FLAG) $< $(RELEASE_INCLUDE_PATH_STATIC) $(LINKING_RELEASE_STATIC) -o $@
+
+res/resource_compiled.res: res/resource.rc
+	windres --include-dir $(INCLUDE) -J rc -O coff -i $< -o $@
