@@ -9,7 +9,8 @@ DEBUG_INCLUDE_PATH = 	-I "include" \
 
 LINKING_DEBUG = 	-L "C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll" \
 					-l "wxmsw32ud_core" \
-					-l "wxbase32ud"
+					-l "wxbase32ud" \
+					-lcurl
 
 RELEASE_INCLUDE_PATH = 	-I "include" \
 						-I "C:\Program Files (x86)\wxWidgets\include" \
@@ -17,7 +18,8 @@ RELEASE_INCLUDE_PATH = 	-I "include" \
 
 LINKING_RELEASE = 	-L "C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll" \
 					-l "wxmsw32u_core" \
-					-l "wxbase32u"
+					-l "wxbase32u" \
+					-lcurl
 
 DEBUG_INCLUDE_PATH_STATIC = 	-I "include" \
 								-I "C:\Program Files (x86)\wxWidgets-static\include" \
@@ -56,6 +58,7 @@ LINKING_DEBUG_STATIC = 		-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x64
 							-lversion \
 							-luxtheme \
 							-loleacc \
+							-lcurl
 
 LINKING_RELEASE_STATIC = 	-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x64_lib" \
 							-l "wxmsw32u_core" \
@@ -86,6 +89,7 @@ LINKING_RELEASE_STATIC = 	-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x6
 							-lversion \
 							-luxtheme \
 							-loleacc \
+							-lcurl
 
 
 all: debug release

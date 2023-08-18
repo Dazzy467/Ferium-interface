@@ -6,3 +6,4 @@ build/debug/debug.exe
 build/release/release.exe
 build/debug-static/debug.exe
 build/release-static/release.exe
+include/json.hpp.gch
