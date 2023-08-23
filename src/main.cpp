@@ -3,7 +3,7 @@
 #include "wxCustomButton.h"
 #include "json.hpp"
 #include "fstream"
-#include "curlModrinth.h"
+#include "curlHelper.h"
 #include "helper.h"
 #include <map>
 #include <filesystem>
@@ -213,16 +213,13 @@ public: // Event handler
 
             // Get the mod list of that profile and append it to the modlist
             nlohmann::json modList = jsonData["profiles"][e.GetIndex()]["mods"];
-            
-
-
 
             if (E_ModList->GetItemCount() > 0)
                 E_ModList->DeleteAllItems();
 
             for (const auto& mod : modList)
             {
-
+                // Deprecate the map, find a new way to cache the version data
                 if (modVersionMap.find(mod["identifier"]["ModrinthProject"].get<std::string>()) != modVersionMap.end())
                 {
                     long itemIndex = E_ModList->InsertItem(E_ModList->GetItemCount(),mod["name"].get<std::string>());
@@ -231,21 +228,40 @@ public: // Event handler
                 else{
                     wxYield();
                     std::string modUrl = apiUrl + mod["identifier"]["ModrinthProject"].get<std::string>() + "/version";
-                    std::string response = modrinth::HttpGet(modUrl);
+                    std::string response = curl::HttpGet(modUrl);
                     nlohmann::json responseJson = nlohmann::json::parse(response);
 
                     // Find the correct version number based on the mod loader in the profile
                     for (auto& version : responseJson)
                     {
-                        if (version["loaders"][0].get<std::string>() == toLowercase(jsonData["profiles"][e.GetIndex()]["mod_loader"].get<std::string>()))
+                        bool isBreak = false;
+                        auto gameVersions = version["game_versions"];
+
+                        for (auto& gameVersion : gameVersions)
                         {
-                            modVersionMap[mod["identifier"]["ModrinthProject"].get<std::string>()] = version["version_number"].get<std::string>();
-                            
-                            long itemIndex = E_ModList->InsertItem(E_ModList->GetItemCount(),mod["name"].get<std::string>());
-                            E_ModList->SetItem(itemIndex, 1, version["version_number"].get<std::string>());
-                            
-                            break;
+                            // Check the game version and then the mod loader
+                            if (gameVersion.get<std::string>() == jsonData["profiles"][e.GetIndex()]["game_version"].get<std::string>())
+                            {
+                                // Check the mod loader
+                                if (version["loaders"][0].get<std::string>() == toLowercase(jsonData["profiles"][e.GetIndex()]["mod_loader"].get<std::string>()))
+                                {
+                                    // deprecate map, find new method for caching the version data
+                                    // modVersionMap[mod["identifier"]["ModrinthProject"].get<std::string>()] = version["version_number"].get<std::string>();
+                                    
+                                    long itemIndex = E_ModList->InsertItem(E_ModList->GetItemCount(),mod["name"].get<std::string>());
+                                    E_ModList->SetItem(itemIndex, 1, version["version_number"].get<std::string>());
+                                    
+                                    isBreak = true;
+                                }
+                            }
                         }
+                        
+
+
+
+                        if (isBreak)
+                            break;
+                        
                     }
 
 

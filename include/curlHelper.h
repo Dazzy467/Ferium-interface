@@ -4,7 +4,7 @@
 #include <curl/curl.h>
 
 
-namespace modrinth
+namespace curl
 {
 
 size_t WriteCallback(void* ptr, size_t size, size_t count, void* stream) {
