@@ -1,102 +1,137 @@
 {
-  "active_profile": 3,
-  "active_modpack": 0,
-  "profiles": [
-    {
-      "name": "Dazzy",
-      "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods",
-      "game_version": "1.20.1",
-      "mod_loader": "Fabric",
-      "mods": [
+    "active_modpack": 0,
+    "active_profile": 2,
+    "modpacks": [],
+    "profiles": [
         {
-          "name": "Better Combat",
-          "identifier": {
-            "ModrinthProject": "5sy6g3kz"
-          }
+            "game_version": "1.20.1",
+            "mod_loader": "Fabric",
+            "mods": [
+                {
+                    "identifier": {
+                        "ModrinthProject": "5sy6g3kz"
+                    },
+                    "name": "Better Combat"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "8shC1gFX"
+                    },
+                    "name": "BetterF3"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "9s6osm5g"
+                    },
+                    "name": "Cloth Config API"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "VSNURh3q"
+                    },
+                    "name": "Concurrent Chunk Management Engine (Fabric)"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "P7dR8mSH"
+                    },
+                    "name": "Fabric API"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "yBW8D80W"
+                    },
+                    "name": "LambDynamicLights"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "gvQqBUqZ"
+                    },
+                    "name": "Lithium"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "mOgUt4GM"
+                    },
+                    "name": "Mod Menu"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "Xy8aRQKS"
+                    },
+                    "name": "Physics Mod"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "gedNE4y2"
+                    },
+                    "name": "playerAnimator"
+                },
+                {
+                    "identifier": {
+                        "ModrinthProject": "AANobbMI"
+                    },
+                    "name": "Sodium"
+                }
+            ],
+            "name": "Dazzy",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "BetterF3",
-          "identifier": {
-            "ModrinthProject": "8shC1gFX"
-          }
+            "game_version": "1.20.1",
+            "mod_loader": "Forge",
+            "mods": [],
+            "name": "Lukee",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Cloth Config API",
-          "identifier": {
-            "ModrinthProject": "9s6osm5g"
-          }
+            "game_version": "1.20.1",
+            "mod_loader": "Fabric",
+            "mods": [],
+            "name": "Feysha",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Concurrent Chunk Management Engine (Fabric)",
-          "identifier": {
-            "ModrinthProject": "VSNURh3q"
-          }
+            "game_version": "1.20.1",
+            "mod_loader": "Fabric",
+            "mods": [],
+            "name": "Rizky",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Fabric API",
-          "identifier": {
-            "ModrinthProject": "P7dR8mSH"
-          }
+            "game_version": "1.20.1",
+            "mod_loader": "Fabric",
+            "mods": [],
+            "name": "David",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "LambDynamicLights",
-          "identifier": {
-            "ModrinthProject": "yBW8D80W"
-          }
+            "game_version": "1.17.1",
+            "mod_loader": "Forge",
+            "mods": [],
+            "name": "Pavel",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Lithium",
-          "identifier": {
-            "ModrinthProject": "gvQqBUqZ"
-          }
+            "game_version": "1.10.2",
+            "mod_loader": "Forge",
+            "mods": [],
+            "name": "Agus",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Mod Menu",
-          "identifier": {
-            "ModrinthProject": "mOgUt4GM"
-          }
+            "game_version": "1.19.4",
+            "mod_loader": "Quilt",
+            "mods": [],
+            "name": "Reyhan",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         },
         {
-          "name": "Physics Mod",
-          "identifier": {
-            "ModrinthProject": "Xy8aRQKS"
-          }
-        },
-        {
-          "name": "playerAnimator",
-          "identifier": {
-            "ModrinthProject": "gedNE4y2"
-          }
-        },
-        {
-          "name": "Sodium",
-          "identifier": {
-            "ModrinthProject": "AANobbMI"
-          }
+            "game_version": "1.14.4",
+            "mod_loader": "Fabric",
+            "mods": [],
+            "name": "Rendy",
+            "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods"
         }
-      ]
-    },
-    {
-      "name": "Lukee",
-      "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods",
-      "game_version": "1.20.1",
-      "mod_loader": "Forge",
-      "mods": []
-    },
-    {
-      "name": "2",
-      "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods",
-      "game_version": "1.20.1",
-      "mod_loader": "Fabric",
-      "mods": []
-    },
-    {
-      "name": "Rizky",
-      "output_dir": "C:\\Users\\David Yusuf\\AppData\\Roaming\\.minecraft\\mods",
-      "game_version": "1.20.1",
-      "mod_loader": "Fabric",
-      "mods": []
-    }
-  ],
-  "modpacks": []
+    ]
 }

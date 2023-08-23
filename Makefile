@@ -1,5 +1,5 @@
 DEBUG_FLAG = -fdiagnostics-color=always -g -DDEBUG
-RELEASE_FLAG = -static -s -O3 -Wl,--subsystem,windows
+RELEASE_FLAG = -s -O3 -Wl,--subsystem,windows -DNDEBUG
 DLL_PATH = C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll
 INCLUDE = "C:\Program Files (x86)\wxWidgets\include"
 
@@ -10,7 +10,8 @@ DEBUG_INCLUDE_PATH = 	-I "include" \
 LINKING_DEBUG = 	-L "C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll" \
 					-l "wxmsw32ud_core" \
 					-l "wxbase32ud" \
-					-lcurl
+					-lcurl \
+					-luserenv
 
 RELEASE_INCLUDE_PATH = 	-I "include" \
 						-I "C:\Program Files (x86)\wxWidgets\include" \
@@ -19,7 +20,8 @@ RELEASE_INCLUDE_PATH = 	-I "include" \
 LINKING_RELEASE = 	-L "C:\Program Files (x86)\wxWidgets\lib\gcc_x64_dll" \
 					-l "wxmsw32u_core" \
 					-l "wxbase32u" \
-					-lcurl
+					-lcurl \
+					-luserenv
 
 DEBUG_INCLUDE_PATH_STATIC = 	-I "include" \
 								-I "C:\Program Files (x86)\wxWidgets-static\include" \
@@ -58,7 +60,8 @@ LINKING_DEBUG_STATIC = 		-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x64
 							-lversion \
 							-luxtheme \
 							-loleacc \
-							-lcurl
+							-lcurl \
+							-luserenv
 
 LINKING_RELEASE_STATIC = 	-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x64_lib" \
 							-l "wxmsw32u_core" \
@@ -89,7 +92,8 @@ LINKING_RELEASE_STATIC = 	-L "C:\Program Files (x86)\wxWidgets-static\lib\gcc_x6
 							-lversion \
 							-luxtheme \
 							-loleacc \
-							-lcurl
+							-lcurl \
+							-luserenv
 
 
 all: debug release
@@ -114,14 +118,14 @@ build/debug/wxmsw32u_core_gcc_custom.dll: build/release/release.exe
 build/debug/debug.exe: src/main.cpp res/resource_compiled.res include/*.h
 	g++ $(DEBUG_FLAG) src/main.cpp res/resource_compiled.res $(DEBUG_INCLUDE_PATH) $(LINKING_DEBUG) -o $@
 	
-build/release/release.exe: src/main.cpp
-	g++ $(RELEASE_FLAG) $< $(RELEASE_INCLUDE_PATH) $(LINKING_RELEASE) -o $@
+build/release/release.exe: src/main.cpp res/resource_compiled.res include/*.h
+	g++ $(RELEASE_FLAG) src/main.cpp res/resource_compiled.res $(RELEASE_INCLUDE_PATH) $(LINKING_RELEASE) -o $@
 
-build/debug-static/debug.exe: src/main.cpp
-	g++ $(DEBUG_FLAG) $< $(DEBUG_INCLUDE_PATH_STATIC) $(LINKING_DEBUG_STATIC) -o $@
+build/debug-static/debug.exe: src/main.cpp res/resource_compiled.res include/*.h
+	g++ $(DEBUG_FLAG) src/main.cpp res/resource_compiled.res $(DEBUG_INCLUDE_PATH_STATIC) $(LINKING_DEBUG_STATIC) -o $@
 
-build/release-static/release.exe: src/main.cpp 
-	g++ $(RELEASE_FLAG) $< $(RELEASE_INCLUDE_PATH_STATIC) $(LINKING_RELEASE_STATIC) -o $@
+build/release-static/release.exe: src/main.cpp res/resource_compiled.res include/*.h
+	g++ $(RELEASE_FLAG) src/main.cpp res/resource_compiled.res $(RELEASE_INCLUDE_PATH_STATIC) $(LINKING_RELEASE_STATIC) -o $@
 
 res/resource_compiled.res: res/resource.rc
 	windres --include-dir $(INCLUDE) -J rc -O coff -i $< -o $@

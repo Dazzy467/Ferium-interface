@@ -4,7 +4,10 @@
 #include "json.hpp"
 #include "fstream"
 #include "curlModrinth.h"
+#include "helper.h"
 #include <map>
+#include <filesystem>
+#include <userenv.h>
 
 
 class ProfilePanel : public wxPanel
@@ -13,27 +16,73 @@ public:
     enum class ElementID
     {
         E_PROFILELIST = wxID_HIGHEST + 3000,
-        E_MODLIST
+        E_MODLIST,
+        E_PROFILEINPUT,
+        E_PROFILEMCVER,
+        E_PROFILEMODLOADERCH,
+        E_BTNPROFILE,
+        E_BTNPROFILEDEL
 
     };
+    
 public:
     ProfilePanel(wxWindow* _parent,wxWindowID _winID) : wxPanel(_parent,_winID)
     {
         
         E_ProfileList = new wxListCtrl(this,static_cast<int>(ElementID::E_PROFILELIST),wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
         E_ModList = new wxListCtrl(this,static_cast<int>(ElementID::E_MODLIST),wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+        E_BtnProfile = new wxButton(this,static_cast<int>(ElementID::E_BTNPROFILE),ProfileButtonLabel);
+        E_BtnProfileDel = new wxButton(this,static_cast<int>(ElementID::E_BTNPROFILEDEL),"Delete");
 
+
+        E_ProfileInput = new wxTextCtrl(this,static_cast<int>(ElementID::E_PROFILEINPUT));
+        E_MCVersionChoice = new wxChoice(this,static_cast<int>(ElementID::E_PROFILEMCVER));
+        E_ModLoaderChoice = new wxChoice(this,static_cast<int>(ElementID::E_PROFILEMODLOADERCH));
+
+        
+        // Append the choice list
+        E_MCVersionChoice->Append(minecraftVersionList);
+        E_ModLoaderChoice->Append(modLoaderList);
+        E_MCVersionChoice->SetSelection(0);
+        E_ModLoaderChoice->SetSelection(0);
+        
         E_ProfileList->Bind(wxEVT_LIST_ITEM_ACTIVATED,&ProfilePanel::OnItemActivated,this);
         E_ProfileList->Bind(wxEVT_LIST_ITEM_SELECTED,&ProfilePanel::OnItemSelected,this);
+        E_ProfileList->Bind(wxEVT_LIST_ITEM_DESELECTED,&ProfilePanel::OnItemDeselect,this);
+
+        E_BtnProfile->Bind(wxEVT_BUTTON,&ProfilePanel::OnProfileBtn,this);
+        E_BtnProfileDel->Bind(wxEVT_BUTTON,&ProfilePanel::OnProfileBtnDel,this);
+
+        E_BtnProfileDel->Hide();
 
         S_MainSizer = new wxBoxSizer(wxVERTICAL);
         S_ListBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+        S_FormSizer = new wxBoxSizer(wxHORIZONTAL);
+        S_InputSizer = new wxFlexGridSizer(8,2,FromDIP(10),FromDIP(10));
+        S_InputSizer->AddGrowableCol(1);
 
+        auto ProfileInputLabel = new wxStaticText(this,wxID_ANY,"Profile name: ");
+        auto VersionInputLabel = new wxStaticText(this,wxID_ANY,"Minecraft version: ");
+        auto ModLoaderInputLabel = new wxStaticText(this,wxID_ANY,"Mod loader: ");
+
+        S_InputSizer->Add(ProfileInputLabel,0,wxALIGN_CENTER_VERTICAL | wxLEFT | wxTOP | wxRIGHT,5);
+        S_InputSizer->Add(E_ProfileInput,1,wxLEFT | wxTOP,5);
+
+        S_InputSizer->Add(VersionInputLabel,0,wxALIGN_CENTER_VERTICAL | wxLEFT | wxTOP | wxRIGHT,5);
+        S_InputSizer->Add(E_MCVersionChoice,1,wxLEFT | wxTOP,5);
+
+        S_InputSizer->Add(ModLoaderInputLabel,0,wxALIGN_CENTER_VERTICAL | wxLEFT | wxTOP | wxRIGHT,5);
+        S_InputSizer->Add(E_ModLoaderChoice,1,wxLEFT | wxTOP,5);
+
+        S_InputSizer->Add(E_BtnProfile,1,wxLEFT | wxTOP,5);
+        S_InputSizer->Add(E_BtnProfileDel,1,wxLEFT | wxTOP,5);
+        
         S_ListBoxSizer->Add(E_ProfileList,1,wxEXPAND);
         S_ListBoxSizer->Add(E_ModList,1,wxEXPAND | wxLEFT,10);
 
+        S_FormSizer->Add(S_InputSizer,1,wxEXPAND);
         S_MainSizer->Add(S_ListBoxSizer,1,wxEXPAND);
-
+        S_MainSizer->Add(S_FormSizer,1,wxEXPAND);
 
 
         // Code here
@@ -41,7 +90,12 @@ public:
         // Open ferium config.json file
         FILE.open("../../Json/config.json",std::ios::in);
         // Json parser
-        jsonData = nlohmann::json::parse(FILE);
+        if (FILE.is_open())
+        {
+            jsonData = nlohmann::json::parse(FILE);
+            FILE.close();
+        }
+
 
         nlohmann::json profileArray = jsonData["profiles"];
 
@@ -54,6 +108,7 @@ public:
 
         E_ModList->InsertColumn(0,"Mods");
         E_ModList->InsertColumn(1,"Version");
+        
 
         // Read the profile name and append to the profile list
         for (const auto& profile : profileArray)
@@ -64,19 +119,68 @@ public:
             E_ProfileList->SetItem(itemIndex, 2, profile["mod_loader"].get<std::string>());
         }
 
-        this->SetSizer(S_MainSizer);
+        this->SetSizerAndFit(S_MainSizer);
     }
     ~ProfilePanel(){}
 public: // Element
     wxListCtrl* E_ProfileList;
     wxListCtrl* E_ModList;
+
+    wxTextCtrl* E_ProfileInput;
+    wxChoice* E_MCVersionChoice;
+    wxChoice* E_ModLoaderChoice;
+
+    wxButton* E_BtnProfile;
+    wxButton* E_BtnProfileDel;
+    wxString ProfileButtonLabel = "Add";
+
+
+    
 public: // Sizer
+    wxFlexGridSizer* S_InputSizer;
     wxBoxSizer* S_MainSizer;
     wxBoxSizer* S_ListBoxSizer;
+    wxBoxSizer* S_FormSizer;
+
+    
 public: // Member
     std::fstream FILE;
     nlohmann::json jsonData;
-    std::map<std::string,std::string> modVersionMap;
+    std::map<wxString,std::string> modVersionMap;
+    std::vector<wxString> minecraftVersionList = {
+        "1.20.1",
+        "1.19.4",
+        "1.19.3",
+        "1.19.2",
+        "1.19",
+        "1.18.2",
+        "1.17.1",
+        "1.16.5",
+        "1.15.2",
+        "1.14.4",
+        "1.13.2",
+        "1.12.2",
+        "1.11.2",
+        "1.10.2",
+        "1.9.4",
+        "1.8.9",
+        "1.7.10",
+        "1.6.4",
+        "1.5.2",
+        "1.4.7",
+        "1.3.2",
+        "1.2.5",
+        "1.1",
+        "b1.7.3"
+    };
+    std::vector<wxString> modLoaderList = {
+        "Fabric",
+        "Forge",
+        "Quilt"
+    };
+    bool EditProfileMode = false;
+
+    long profileSelectedIndex;
 public: // Function
     void FitListCtrlColumns(wxListCtrl* listCtrl)
     {
@@ -102,10 +206,6 @@ public: // Event handler
             std::cout << "Activated profile: " << e.GetText() << std::endl;
             
             std::string apiUrl = "https://api.modrinth.com/v2/project/";
-            
-            // std::string response = modrinth::HttpGet(apiUrl);
-            // nlohmann::json responseJson = nlohmann::json::parse(response);
-            // std::cout << "Response test (mod name): " << responseJson["title"] << std::endl;
 
             // Sets the active profile
             jsonData["active_profile"] = e.GetIndex();
@@ -113,6 +213,10 @@ public: // Event handler
 
             // Get the mod list of that profile and append it to the modlist
             nlohmann::json modList = jsonData["profiles"][e.GetIndex()]["mods"];
+            
+
+
+
             if (E_ModList->GetItemCount() > 0)
                 E_ModList->DeleteAllItems();
 
@@ -129,10 +233,24 @@ public: // Event handler
                     std::string modUrl = apiUrl + mod["identifier"]["ModrinthProject"].get<std::string>() + "/version";
                     std::string response = modrinth::HttpGet(modUrl);
                     nlohmann::json responseJson = nlohmann::json::parse(response);
-                    modVersionMap[mod["identifier"]["ModrinthProject"].get<std::string>()] = responseJson[0]["version_number"].get<std::string>();
 
-                    long itemIndex = E_ModList->InsertItem(E_ModList->GetItemCount(),mod["name"].get<std::string>());
-                    E_ModList->SetItem(itemIndex, 1, responseJson[0]["version_number"].get<std::string>());
+                    // Find the correct version number based on the mod loader in the profile
+                    for (auto& version : responseJson)
+                    {
+                        std::cout << version["loaders"][0].get<std::string>() << std::endl; 
+                        if (version["loaders"][0].get<std::string>() == toLowercase(jsonData["profiles"][e.GetIndex()]["mod_loader"].get<std::string>()))
+                        {
+                            modVersionMap[mod["identifier"]["ModrinthProject"].get<std::string>()] = version["version_number"].get<std::string>();
+                            
+                            long itemIndex = E_ModList->InsertItem(E_ModList->GetItemCount(),mod["name"].get<std::string>());
+                            E_ModList->SetItem(itemIndex, 1, version["version_number"].get<std::string>());
+                            
+                            break;
+                        }
+                    }
+
+
+
                 }
 
 
@@ -153,8 +271,18 @@ public: // Event handler
         {
         case static_cast<int>(ElementID::E_PROFILELIST):
         {
+            EditProfileMode = true;
             std::cout << "Selected index: " << e.GetIndex() << std::endl;
             std::cout << "Selected profile: " << e.GetText() << std::endl;
+
+            profileSelectedIndex = e.GetIndex();
+
+            if (EditProfileMode)
+            {
+                E_BtnProfile->SetLabel("Edit");
+                E_BtnProfileDel->Show();
+            }
+
             break;
         }
             
@@ -163,6 +291,154 @@ public: // Event handler
             break;
         }
     }
+
+    void OnItemDeselect(wxListEvent& e)
+    {
+        switch (e.GetId())
+        {
+        case static_cast<int>(ElementID::E_PROFILELIST):
+        {
+            EditProfileMode = false;
+            std::cout << "Deselected index: " << e.GetIndex() << std::endl;
+            std::cout << "Deselected profile: " << e.GetText() << std::endl;
+
+            E_BtnProfile->SetLabel("Add");
+            E_BtnProfileDel->Hide();
+            profileSelectedIndex = -1;
+            break;
+        }
+            
+        
+        default:
+            break;
+        }
+    }
+    
+    void OnProfileBtn(wxCommandEvent& e)
+    {
+        bool isAlreadyExist = false;
+        
+
+        // Get minecraft directory, from the user
+        char userProfileDir[MAX_PATH];
+        DWORD bufferSize = sizeof(userProfileDir);
+
+        if (GetUserProfileDirectoryA(GetCurrentProcessToken(), userProfileDir, &bufferSize)) {
+            // Construct the full path to the Minecraft folder
+            
+
+            // Print the full path to the Minecraft folder
+            std::cout << "Minecraft Folder Path: " << std::filesystem::path(userProfileDir) << std::endl;
+        } else {
+            std::cerr << "Failed to retrieve user profile directory." << std::endl;
+        }
+        
+        
+        // Read the profile name and append to the profile list
+        
+        nlohmann::json profileArray = jsonData["profiles"];
+        nlohmann::json profile = {
+            
+            {"name", E_ProfileInput->GetValue().ToStdString()},
+            {"output_dir",std::filesystem::path(userProfileDir).string() + "\\AppData\\Roaming\\.minecraft\\mods"},
+            {"game_version",E_MCVersionChoice->GetStringSelection().ToStdString()},
+            {"mod_loader",E_ModLoaderChoice->GetStringSelection().ToStdString()},
+            {"mods",nlohmann::json::array()}
+            
+        };
+
+        if (E_ProfileInput->IsEmpty())
+        {
+            wxMessageBox("Profile name cannot be empty!", "Warning", wxICON_WARNING | wxOK, this);
+            return;
+        }
+
+        if (!EditProfileMode)
+        {
+            for (const auto& profil : jsonData["profiles"])
+            {
+                if (profil["name"].get<std::string>() == E_ProfileInput->GetValue().ToStdString())
+                    isAlreadyExist = true;
+            }
+
+
+            if (!isAlreadyExist)
+            {
+                FILE.open("../../Json/config.json",std::ios::out | std::ios::trunc);
+                E_ProfileInput->Clear();
+                profileArray.push_back(profile);
+                jsonData["profiles"].push_back(profile);
+
+                if (FILE.is_open())
+                {
+                    FILE << jsonData;
+                    FILE.close();
+                }
+
+
+                // std::cout << profileArray << std::endl;
+
+
+                long itemIndex = E_ProfileList->InsertItem(E_ProfileList->GetItemCount(),
+                                                        profileArray[profileArray.size() - 1]["name"].get<std::string>());
+                E_ProfileList->SetItem(itemIndex, 1, profileArray[profileArray.size() - 1]["game_version"].get<std::string>());
+                E_ProfileList->SetItem(itemIndex, 2, profileArray[profileArray.size() - 1]["mod_loader"].get<std::string>());
+            }
+            else 
+                wxMessageBox("Profile already exist!", "Warning", wxICON_WARNING | wxOK, this);
+            
+        } else{
+
+            for (const auto& profil : jsonData["profiles"])
+            {
+                if (profil["name"].get<std::string>() == E_ProfileInput->GetValue().ToStdString())
+                    isAlreadyExist = true;
+            }
+
+            if (!isAlreadyExist)
+            {
+                profile = jsonData["profiles"][profileSelectedIndex];
+                profile["name"] = E_ProfileInput->GetValue().ToStdString();
+                profile["game_version"] = E_MCVersionChoice->GetStringSelection().ToStdString();
+                profile["mod_loader"] = E_ModLoaderChoice->GetStringSelection().ToStdString();
+                jsonData["profiles"][profileSelectedIndex] = profile;
+
+                E_ProfileList->SetItem(profileSelectedIndex,0,profile["name"].get<std::string>());
+                E_ProfileList->SetItem(profileSelectedIndex,1,profile["game_version"].get<std::string>());
+                E_ProfileList->SetItem(profileSelectedIndex,2,profile["mod_loader"].get<std::string>());
+
+                FILE.open("../../Json/config.json",std::ios::out | std::ios::trunc);
+
+                if (FILE.is_open())
+                {
+                    FILE << jsonData;
+                    FILE.close();
+                }
+            }
+            else 
+                wxMessageBox("Profile already exist!", "Warning", wxICON_WARNING | wxOK, this);
+
+            
+
+        }
+        
+
+    }
+
+    void OnProfileBtnDel(wxCommandEvent& e)
+    {
+
+        jsonData["profiles"].erase(profileSelectedIndex);
+        E_ProfileList->DeleteItem(profileSelectedIndex);
+
+        FILE.open("../../Json/config.json",std::ios::out | std::ios::trunc);
+        if (FILE.is_open())
+        {
+            FILE << jsonData;
+            FILE.close();
+        }
+    }
+
 };
 class ModManagerPanel : public wxPanel
 {
@@ -265,7 +541,7 @@ public:
         std::cout << "Active profile: " << jData["profiles"][jData["active_profile"].get<unsigned int>()]["name"].get<std::string>() << std::endl;
 
 
-        this->SetMinSize(wxSize(600,500));
+        this->SetMinSize(wxSize(800,500));
         this->SetIcon(wxIcon("IDI_FILE"));
         
         // Menu
@@ -398,7 +674,7 @@ public: // Event handler
                 P_ModManager->Hide();
                 std::cout << "Mod manager hidden!\n";
             }
-            this->Layout();
+            // this->Layout();
             
             
             break;
