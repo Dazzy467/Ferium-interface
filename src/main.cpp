@@ -237,7 +237,6 @@ public: // Event handler
                     // Find the correct version number based on the mod loader in the profile
                     for (auto& version : responseJson)
                     {
-                        std::cout << version["loaders"][0].get<std::string>() << std::endl; 
                         if (version["loaders"][0].get<std::string>() == toLowercase(jsonData["profiles"][e.GetIndex()]["mod_loader"].get<std::string>()))
                         {
                             modVersionMap[mod["identifier"]["ModrinthProject"].get<std::string>()] = version["version_number"].get<std::string>();
